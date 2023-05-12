@@ -51,7 +51,7 @@ group :development, :test do
   gem "byebug", platform: :mri
   gem 'rspec-rails', '~> 4.1.0'
   gem "rspec_junit_formatter"
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails' # replacing factory_girl_rails since it's deprecated
 end
 
 group :development do
