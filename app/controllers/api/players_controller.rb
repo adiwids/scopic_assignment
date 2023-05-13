@@ -1,5 +1,6 @@
 class Api::PlayersController < ApplicationController
-  before_action :find_player, only: :update
+  before_action :find_player, only: %i[update destroy]
+  before_action :authenticate_token!, only: :destroy
 
   # GET /players
   def index
@@ -41,6 +42,7 @@ class Api::PlayersController < ApplicationController
 
   # DELETE /players/:id
   def destroy
+    head :no_content if @player.destroy
   end
 
   private
