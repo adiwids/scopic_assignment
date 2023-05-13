@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::PlayersController, type: :request do
   describe 'DELETE /api/players' do
     context 'test_should_delete' do
-      let!(:player_1) { FactoryGirl.create(:player) }
+      let!(:player_1) { FactoryBot.create(:player) }
 
       it "Should delete" do
         delete "/api/players/#{player_1.id}"
