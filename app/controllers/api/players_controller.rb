@@ -1,4 +1,6 @@
 class Api::PlayersController < ApplicationController
+  before_action :find_player, only: :update
+
   # GET /players
   def index
   end
@@ -24,6 +26,17 @@ class Api::PlayersController < ApplicationController
 
   # PUT /players/:id
   def update
+    begin
+      @player.update(Api::PlayerRequestBody.new(update_params.merge(id: @player.id)).to_h)
+
+      if @player.errors.empty?
+        json_response(Api::PlayerJsonPresenter.new(@player).to_h)
+      else
+        render json: { message: @player.errors.full_messages.first }, status: :unprocessable_entity
+      end
+    rescue ArgumentError => error
+      render json: { message: error.message }, status: :bad_request
+    end
   end
 
   # DELETE /players/:id
@@ -34,5 +47,13 @@ class Api::PlayersController < ApplicationController
 
   def create_params
     params.require(:_json).permit(:name, :position, player_skills: [:skill, :value])
+  end
+
+  def update_params
+    params.permit(:name, :position, player_skills: [:skill, :value])
+  end
+
+  def find_player
+    @player = Player.find(params[:id])
   end
 end
