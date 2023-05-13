@@ -6,5 +6,9 @@ Rails.application.routes.draw do
 
   namespace 'api', defaults: { format: 'json' } do
     resources :players, except: %i[new edit]
+
+    resources :teams, path: 'team', only: :none do
+      post :process, action: 'selection', on: :collection
+    end
   end
 end
