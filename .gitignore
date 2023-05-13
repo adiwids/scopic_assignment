@@ -4,3 +4,4 @@ log
 junit.xml
 .DS_Store
 /.ruby-version
+db/*.sqlite3
