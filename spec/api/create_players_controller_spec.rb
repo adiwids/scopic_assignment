@@ -69,7 +69,7 @@ describe Api::PlayersController, type: :request do
       it 'returns error response' do
         post '/api/players', params: params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
         expect(json_response['message']).to match(/invalid value for position: .+/i)
       end
     end
@@ -186,7 +186,7 @@ describe Api::PlayersController, type: :request do
         post '/api/players', params: params
 
         expect(response).to have_http_status(:bad_request)
-        expect(json_response['message']).to match(/missing parameter: _json/i)
+        expect(json_response['message']).to match(/param is missing .+ _json/i)
       end
     end
   end
