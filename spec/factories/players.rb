@@ -32,6 +32,16 @@ FactoryBot.define do
       }
     end
 
+    trait :rookie_defender do
+      position { 'defender' }
+
+      player_skills_attributes {
+        %i[low_defense medium_strength medium_stamina medium_speed low_attack].map do |skill_trait|
+          FactoryBot.attributes_for(:player_skill, skill_trait).slice(:skill, :value)
+        end
+      }
+    end
+
     trait :defensive_midfielder do
       position { 'midfielder' }
 
