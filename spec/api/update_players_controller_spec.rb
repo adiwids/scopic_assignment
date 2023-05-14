@@ -55,7 +55,7 @@ describe Api::PlayersController, type: :request do
         put "/api/players/#{player.id}", params: params
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json_response['message']).to match(/invalid value for name: \(blank\)/i)
+        expect(json_response['message']).to match(/invalid empty value for name/i)
       end
     end
 
@@ -81,7 +81,7 @@ describe Api::PlayersController, type: :request do
         put "/api/players/#{player.id}", params: params
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json_response['message']).to match(/invalid value for position: \(blank\)/i)
+        expect(json_response['message']).to match(/invalid empty value for position/i)
       end
     end
 
@@ -106,8 +106,8 @@ describe Api::PlayersController, type: :request do
       it 'returns error response' do
         put "/api/players/#{player.id}", params: params
 
-        expect(response).to have_http_status(:bad_request)
-        expect(json_response['message']).to match(/invalid value for position: \(blank\)/i)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response['message']).to match(/invalid value for position: \w+/i)
       end
     end
 
@@ -123,7 +123,7 @@ describe Api::PlayersController, type: :request do
         put "/api/players/#{player.id}", params: params
 
         expect(response).to have_http_status(:bad_request)
-        expect(json_response['message']).to match(/invalid value for player skills: \(empty\)/i)
+        expect(json_response['message']).to match(/invalid empty player skills/i)
       end
     end
 
@@ -149,7 +149,7 @@ describe Api::PlayersController, type: :request do
         put "/api/players/#{player.id}", params: params
 
         expect(response).to have_http_status(:bad_request)
-        expect(json_response['message']).to match(/invalid value for player skills: defense \(duplicate\)/i)
+        expect(json_response['message']).to match(/duplicate value for skill: \w+/i)
       end
     end
 
@@ -193,7 +193,7 @@ describe Api::PlayersController, type: :request do
         put "/api/players/-1", params: params
 
         expect(response).to have_http_status(:not_found)
-        expect(json_response['message']).to match(/invalid value for ID: -1/i)
+        expect(json_response['message']).to match(/invalid resource with id: -?\d+/i)
       end
     end
   end

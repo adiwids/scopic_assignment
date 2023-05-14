@@ -22,7 +22,7 @@ describe Api::PlayersController, type: :request do
         delete "/api/players/#{player_1.id}", params: {}, headers: { 'Authorization' => "Bearer #{auth_token}" }
 
         expect(response).to have_http_status(:not_found)
-        expect(json_response['message']).to match(/invalid value for id: [-\d+]/i)
+        expect(json_response['message']).to match(/invalid resource with id: -?\d+/i)
       end
     end
 

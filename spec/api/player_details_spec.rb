@@ -24,7 +24,7 @@ RSpec.describe Api::PlayersController, type: :request do
 
       it 'returns not found response' do
         expect(response).to have_http_status(:not_found)
-        expect(json_response['message']).to match(/invalid value for ID: [-\d+]/i)
+        expect(json_response['message']).to match(/invalid resource with id: -?\d+/i)
       end
     end
   end
