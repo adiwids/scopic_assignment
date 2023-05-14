@@ -1,20 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe PlayerSkill, type: :model do
+  let(:subject) { FactoryBot.build(:player_skill) }
+
   context 'Associations' do
     it { is_expected.to belong_to(:player) }
   end
 
   describe '.skill' do
     context 'validation' do
-      it { is_expected.to validate_presence_of(:skill) }
+      it { is_expected.to validate_presence_of(:skill).with_message("Invalid empty value for skill") }
       it { is_expected.to allow_value('defense', 'attack', 'speed', 'strength', 'stamina').for(:skill) }
       it { is_expected.to allow_value(:defense, :attack, :speed, :strength, :stamina).for(:skill) }
 
       context 'with invalid skill names' do
-        it 'raises error' do
+        it 'should be invalid' do
           ['waiter', 1, :symbol].each do |skill|
-            expect { FactoryBot.create(:player_skill, skill: skill) }.to raise_error(ArgumentError)
+            player_skill = FactoryBot.build(:player_skill, skill: skill)
+            expect(player_skill).to be_invalid
+            expect(player_skill.errors.full_messages.first).to match(/invalid value for \w+\'s skill: \w+/i)
           end
         end
       end
@@ -24,15 +28,27 @@ RSpec.describe PlayerSkill, type: :model do
         let(:existing_skill) { FactoryBot.create(:player_skill, player: player) }
         let(:new_skill) { FactoryBot.build(:player_skill, player: player, skill: existing_skill.skill) }
 
-        it { expect(new_skill).to be_invalid }
+        it 'should be invalid' do
+          expect(new_skill).to be_invalid
+          expect(new_skill.errors.full_messages.first).to match(/duplicate value for \w+\'s skill: \w+/i)
+        end
       end
     end
   end
 
   describe '.value' do
     context 'validation' do
-      it { is_expected.to validate_numericality_of(:value).only_integer.allow_nil.is_greater_than_or_equal_to(0).is_less_than_or_equal_to(99) }
-      it { is_expected.to allow_value('1', '99').for(:value) }
+      it { is_expected.to allow_value(nil, '1', '99').for(:value) }
+
+      context 'invalid values' do
+        it 'should be invalid' do
+          [-1, 100, 1.1].each do |val|
+            skill = FactoryBot.build(:player_skill, value: val)
+            expect(skill).to be_invalid
+            expect(skill.errors.full_messages.first).to match(/invalid value for \w+: -?\d+/i)
+          end
+        end
+      end
     end
 
     context 'with non-numeric values' do
