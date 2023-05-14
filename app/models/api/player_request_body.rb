@@ -24,14 +24,14 @@ module Api
       skill_attributes = []
       existing_skills = {}
 
-      existing_skills = PlayerSkill.where(player_id: id).select(:id, :name).pluck(:id, :name).to_h if id
+      existing_skills_ids = PlayerSkill.where(player_id: id).select(:id, :skill).pluck(:skill, :id).to_h if id
 
       player_skills.each do |params|
         raise ArgumentError.new("Invalid value for player skills: #{params[:skill]} (duplicate)") if skill_entries.include?(params[:skill])
 
         skill_entries << params[:skill]
         entry = { skill: params[:skill], value: params[:value] }
-        entry[:id] = existing_skills[params[:skill]] if existing_skills.key?(params[:skill])
+        entry[:id] = existing_skills_ids[params[:skill]] if existing_skills_ids && existing_skills_ids.key?(params[:skill])
         if entry[:id] && !params[:value]
           entry[:_destroy] = true
           entry.delete(:skill)
