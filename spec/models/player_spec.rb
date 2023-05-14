@@ -7,13 +7,15 @@ RSpec.describe Player, type: :model do
 
   describe '.name' do
     context 'validation' do
-      it { is_expected.to validate_presence_of(:name) }
+      it { is_expected.to validate_presence_of(:name).with_message('Invalid empty value for name') }
 
       context 'with duplicate player name and position' do
         before { @player = FactoryBot.create(:player) }
 
         it 'should be invalid' do
-          expect(described_class.new(name: @player.name, position: @player.position)).to be_invalid
+          player = FactoryBot.build(:player, name: @player.name, position: @player.position)
+          expect(player).to be_invalid
+          expect(player.errors.full_messages.first).to match(/name has been used for position: \w+/i)
         end
       end
     end
@@ -24,12 +26,14 @@ RSpec.describe Player, type: :model do
     it { is_expected.to allow_value(:defender, :midfielder, :forward).for(:position) }
 
     context 'validation' do
-      it { is_expected.to validate_presence_of(:position) }
+      it { is_expected.to validate_presence_of(:position).with_message('Invalid empty value for position') }
 
       context 'with invalid position names' do
-        it 'raises error' do
+        it 'should be invalid' do
           ['other', 1, :symbol].each do |pos|
-            expect { FactoryBot.create(:player, position: pos) }.to raise_error(ArgumentError)
+            player = FactoryBot.build(:player, position: pos)
+            expect(player).to be_invalid
+            expect(player.errors.full_messages.first).to match(/invalid value for position: \w+/i)
           end
         end
       end
@@ -52,17 +56,17 @@ RSpec.describe Player, type: :model do
 
       context 'on skill updates' do
         let(:player) { FactoryBot.create(:player, player_skills_attributes: skill_attributes) }
-        let(:skill) { player.player_skills.first }
 
         it 'updates skill and value' do
-          new_skill_name = PlayerSkill.skills.values.reject { |sname| sname.eql?(skill.skill) }.sample
+          current_skill = player.player_skills.first
+          new_skill_name = PlayerSkill::SKILL_NAMES.values.detect { |sname| !sname.eql?(current_skill.skill.to_s) }
           new_skill_value = rand(0..99)
 
-          player.update(player_skills_attributes: [id: skill.id, skill: new_skill_name, value: new_skill_value])
+          player.update(player_skills_attributes: [id: current_skill.id, skill: new_skill_name, value: new_skill_value])
 
-          skill.reload
-          expect(skill.skill).to eql(new_skill_name)
-          expect(skill.value).to eql(new_skill_value)
+          current_skill.reload
+          expect(current_skill.skill).to eql(new_skill_name)
+          expect(current_skill.value).to eql(new_skill_value)
         end
       end
 
