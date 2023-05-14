@@ -1,5 +1,5 @@
 class Api::PlayersController < ApplicationController
-  before_action :find_player, only: %i[update destroy]
+  before_action :find_player, only: %i[update destroy show]
   before_action :authenticate_token!, only: :destroy
 
   # GET /players
@@ -26,6 +26,7 @@ class Api::PlayersController < ApplicationController
 
   # GET /players/:id
   def show
+    json_response(Api::PlayerJsonPresenter.new(@player).to_h)
   end
 
   # PUT /players/:id
