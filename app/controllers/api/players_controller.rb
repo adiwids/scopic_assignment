@@ -17,7 +17,7 @@ class Api::PlayersController < ApplicationController
       if @player.errors.empty?
         json_response(Api::PlayerJsonPresenter.new(@player).to_h)
       else
-        render json: { message: @player.errors.full_messages.first }, status: :unprocessable_entity
+        render json: { message: @player.errors.messages.values.flatten.first }, status: :unprocessable_entity
       end
     rescue ArgumentError => error
       render json: { message: error.message }, status: :bad_request
@@ -37,7 +37,7 @@ class Api::PlayersController < ApplicationController
       if @player.errors.empty?
         json_response(Api::PlayerJsonPresenter.new(@player).to_h)
       else
-        render json: { message: @player.errors.full_messages.first }, status: :unprocessable_entity
+        render json: { message: @player.errors.messages.values.flatten.first }, status: :unprocessable_entity
       end
     rescue ArgumentError => error
       render json: { message: error.message }, status: :bad_request
@@ -60,6 +60,10 @@ class Api::PlayersController < ApplicationController
   end
 
   def find_player
-    @player = Player.find(params[:id])
+    begin
+      @player = Player.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => _error
+      render json: { message: "Invalid resource with ID: #{params[:id]}" }, status: :not_found
+    end
   end
 end
