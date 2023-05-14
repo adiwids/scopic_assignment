@@ -6,7 +6,7 @@ module Api
 
     def initialize(attributes = {})
       super
-      raise ArgumentError.new('Invalid value for player skills: (empty)') unless player_skills&.any?
+      raise ArgumentError.new('Invalid empty player skills') unless player_skills&.any?
     end
 
     def to_h
@@ -27,7 +27,7 @@ module Api
       existing_skills_ids = PlayerSkill.where(player_id: id).select(:id, :skill).pluck(:skill, :id).to_h if id
 
       player_skills.each do |params|
-        raise ArgumentError.new("Invalid value for player skills: #{params[:skill]} (duplicate)") if skill_entries.include?(params[:skill])
+        raise ArgumentError.new("Duplicate value for skill: #{params[:skill]}") if skill_entries.include?(params[:skill])
 
         skill_entries << params[:skill]
         entry = { skill: params[:skill], value: params[:value] }
