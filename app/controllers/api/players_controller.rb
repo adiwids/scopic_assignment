@@ -4,6 +4,9 @@ class Api::PlayersController < ApplicationController
 
   # GET /players
   def index
+    @players = Player.joins(:player_skills).distinct.order(id: :asc)
+
+    json_response(Api::PlayerJsonPresenter.collection(@players))
   end
 
   # POST /players
