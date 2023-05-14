@@ -1,4 +1,4 @@
-class TopPlayerQuery
+class MostSkilledPlayerQuery
   attr_reader :query
 
   def self.call(filters = [])
@@ -6,7 +6,7 @@ class TopPlayerQuery
   end
 
   def initialize
-    @query = Player.joins(:player_skills).distinct.order('player_skills.value DESC')
+    @query = Player.joins(:player_skills).distinct.order('players.position ASC, player_skills.skill ASC, player_skills.value DESC')
   end
 
   def fetch(filters = [])
