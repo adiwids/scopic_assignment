@@ -2,6 +2,10 @@ module Api
   class PlayerJsonPresenter
     attr_reader :player
 
+    def self.collection(players)
+      players.map { |player| new(player).to_h }
+    end
+
     def initialize(player)
       @player = player
     end
@@ -21,9 +25,7 @@ module Api
     end
 
     def player_skill_data
-      @player_skill_data ||= player.player_skills.map do |player_skill|
-        Api::PlayerSkillJsonPresenter.new(player_skill).to_h
-      end
+      @player_skill_data ||= Api::PlayerSkillJsonPresenter.collection(player.player_skills)
     end
   end
 end
