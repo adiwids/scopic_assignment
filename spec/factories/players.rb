@@ -3,6 +3,25 @@ FactoryBot.define do
     name      { Faker::Name.name }
     position  { %w(defender midfielder forward).sample } # refers to Player.positions enum
 
+    transient do
+      randomize_skill_sets { false }
+    end
+
+    after(:build) do |factory, evaluator|
+      if evaluator.randomize_skill_sets
+        trait_name = case factory.position
+        when 'defender'
+          :tough_defender
+        when 'midfielder'
+          %i[defensive_midfielder attacking_midfielder].sample
+        when 'forward'
+          %i[attacker target_man].sample
+        end
+
+        factory.player_skills_attributes = attributes_for(:player, trait_name)[:player_skills_attributes]
+      end
+    end
+
     trait :tough_defender do
       position { 'defender' }
 
